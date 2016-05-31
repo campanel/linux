@@ -1,0 +1,83 @@
+#!/bin/sh
+# 
+# chkconfig --level 345 status-host-priax on
+#
+# description: new-service-php startup script  
+#
+# File : new-service-php
+#
+
+. /etc/rc.d/init.d/functions
+
+PIDFILE="/var/run/new-service-php.pid"
+MYDAEMON="new-service-php"
+
+stop () {
+	PID=`cat $PIDFILE 2>/dev/null`
+	PID=`/bin/echo -n $PID`
+	RUNNING=`/bin/ps $PID | /bin/grep new-service-php.php | /usr/bin/wc -l`
+	if [ $RUNNING -eq "1" ]; then
+		PID=`cat $PIDFILE 2>/dev/null`
+		PID=`/bin/echo -n $PID`
+		/bin/kill -9 $PID 2>/dev/null
+	else
+		echo "$MYDAEMON currently stopped"
+	fi
+}
+
+start () {
+	PID=`cat $PIDFILE 2>/dev/null`
+	PID=`/bin/echo -n $PID`
+	RUNNING=`/bin/ps $PID | /bin/grep new-service-php.php | /usr/bin/wc -l`
+
+	if [ $RUNNING -ge 1 ]
+	then
+		echo "$MYDAEMON already running. Stop it first and try again"
+		exit 0
+	fi
+
+	if [ $RUNNING -ne "1" ]; then
+		PID=`{PATH}/new-service-php.php >/dev/null 2>&1 & echo $!`
+
+    	#echo "Saving PID" $PID " to " $PIDFILE
+        if [ -z $PID ]; then
+            printf "Save PID Fail"
+        else
+            echo $PID > $PIDFILE
+            printf "$MYDAEMON Started \n"
+        fi
+
+	fi
+	exit 0
+}
+
+case "$1" in
+
+	start)
+		echo "Starting $MYDAEMON..."
+		start;
+		;;
+
+	stop)
+		echo "Stopping $MYDAEMON"
+		stop;
+		exit 0
+		;;
+	restart)
+	    $0 stop
+	    $0 start
+		;;
+
+	status)
+		status new-service-php.php
+		exit $?
+		;;
+
+	*)
+		echo "Usage: $MYDAEMON {start|stop|restart|status}"
+		exit 1
+		;;
+
+esac
+  
+# End of this script
