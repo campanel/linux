@@ -1,12 +1,3 @@
-# Linux
+# Linux scripts
 
-Scripts para linux
-
-
-
-## Quer contribuir?
-Sinta-se a vontade!
-
-
-## License
---
+Feel free to contribute
